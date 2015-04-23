@@ -68,7 +68,7 @@ def get_list_of_edges(alpha, beta, n):
         edges.append(Edge(switch1, switch2, cross_half, switch1_index))
     return edges
 
-def get_switch_neighbours(edges, switch, switches):
+def get_switch_neighbours(edges, switch, current_dir_down):
     """
     :param edges:
     :param switch:
@@ -76,10 +76,10 @@ def get_switch_neighbours(edges, switch, switches):
     """
     neighbours = []
     for edge in edges:
-        if (edge.switch1 == switch):
-            neighbours.append(edge.switch2)
-        if (edge.switch2 == switch):
-            neighbours.append(edge.switch1)
+        if (current_dir_down and edge.switch2 == switch):
+            neighbours.append(edge)
+        if (not current_dir_down and edge.switch2 == switch):
+            neighbours.append(edge)
     return neighbours
 
 def get_list_of_components(edges, n):
@@ -89,13 +89,20 @@ def get_list_of_components(edges, n):
     """
     components = []
     switches = get_all_switches(n)
-    while (len(queue) > switches):
+    queue = []
+    while (len(switches) > 0):
         if (len(queue) == 0):
-            queue = [switches.pop()]
-            components.append([[queue[0]]])
-        current = queue.pop()
+            queue = [edges.pop()]
+            components.append([[queue[0].switch1]])
+            current_dir_down = True
+        current_edge = queue.pop()
+        if (current_edge.cross_half):
+            components[-1].append([current_edge.switch2])
+        else:
+            components[-1][-1].append(current_edge.switch2)
+        switches.remove(current_edge.switch2)
 
-        for neighbour in get_switch_neighbours(edges, current):
+        for neighbour in get_switch_neighbours(edges, current_edge.switch2):
             if (switches.count(neighbour) > 0):
                 switches.remove(neighbour)
                 queue.insert(0, neighbour)
