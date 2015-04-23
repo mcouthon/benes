@@ -167,3 +167,18 @@ def get_list_of_components(edges):
 def get_sccs(alpha, beta, n):
     edges = get_list_of_edges(alpha, beta, n)
     return get_list_of_components(edges)
+
+
+def get_diff_index(n1, n2):
+    i = 1
+    while n1 % 2 == n2 % 2:
+        i += 1
+        n1 //= 2
+        n2 //= 2
+    return i
+
+if __name__ == '__main__':
+    print get_diff_index(2,6)
+    print get_diff_index(1,5)
+    print get_diff_index(0,5)
+    print get_diff_index(0,4)
