@@ -111,7 +111,7 @@ def get_white_neighbour(edges, switch, blacklist):
     found_new = False
     while not found_new and i < len(neighbours):
         for j in range(2):
-            if blacklist.count(neighbours[i].switches[j]) > 0:
+            if blacklist.count(neighbours[i].switches[j]) == 0:
                 found_new = True
         i += 1
 
@@ -130,7 +130,7 @@ def find_opening_edge(edges, queue):
     blacklist = []
     next_edge = edges[0]
     while next_edge:
-        blacklist.append(next_edge)
+        blacklist.append(next_edge.switches[current_switch])
         current_edge = next_edge
         current_switch = 1 - current_switch
         next_edge = get_white_neighbour(edges, current_edge.switches[current_switch], blacklist)
@@ -140,7 +140,7 @@ def find_opening_edge(edges, queue):
     return current_switch
 
 
-def get_list_of_components(edges, n):
+def get_list_of_components(edges):
     """
     :param edges:
     :return:
@@ -166,4 +166,4 @@ def get_list_of_components(edges, n):
 
 def get_sccs(alpha, beta, n):
     edges = get_list_of_edges(alpha, beta, n)
-    return get_list_of_components(edges, n)
+    return get_list_of_components(edges)
