@@ -1,4 +1,4 @@
-from core.graph import Switch#, get_sccs
+from core.graph import get_sccs
 
 ON = 1
 OFF = 0
@@ -17,12 +17,6 @@ def calculate_benes(alpha, beta, n):
 
 	sccs = get_sccs(alpha, beta, n)
 	return calculate_all(alpha, beta, sccs, n)
-
-
-def get_sccs(alpha, beta, n):
-	# return [[[Switch(0, 4, True), Switch(2, 6, False), Switch(1, 5, True)]],
-	# 						  [[Switch(3, 7, True), Switch(3, 7, False)]]]
-	return [[[Switch(0, 4, True), Switch(2, 6, False), Switch(1, 5, True)]]]
 
 
 def calculate_all(alpha, beta, sccs, n):
@@ -60,6 +54,9 @@ def calculate_all(alpha, beta, sccs, n):
 
 
 def get_num_of_switches(sccs):
+	"""
+	Returns the total number of switches involved
+	"""
 	num_of_switches = 0
 	for j in range(len(sccs)):
 		scc = sccs[j]
@@ -127,5 +124,19 @@ def calculate_switches(sccs, perm):
 	return top_switches
 
 
+def calculate_benes_2(alpha, beta, n):
+	if len(alpha) != 2:
+		raise StandardError("Alpha is not of length 2")
+
+	d = get_diff_index(alpha[0], alpha[1])
+	r = get_diff_index(beta[0], beta[1])
+
+	result = 1.0 / (n ** 2)
+
+	if d == r:
+		return result
+	else:
+		return result + (2.0 ** d) / (n ** 3)
+
 if __name__ == '__main__':
-	print calculate_benes((1, 4), (2, 6), 8)
+	print calculate_benes((1, 5), (2, 6), 8)
