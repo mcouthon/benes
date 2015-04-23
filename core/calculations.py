@@ -1,4 +1,7 @@
-from core.graph import Edge, Switch
+from core.graph import get_sccs
+
+ON = 1
+OFF = 0
 
 
 def calculate_benes(alpha, beta, n):
@@ -6,41 +9,134 @@ def calculate_benes(alpha, beta, n):
 	Calculate the probability of an ordered set alpha to get to the ordered set beta
 	with n being the current size of the net
 	"""
-	edges = get_list_of_edges(alpha, beta, n)
-	switches = get_switches(edges)
-	sccs = get_sccs(edges, switches)
+	if not alpha:
+		return 1.0
+
+	if n == 2:
+		return 0.5
+
+	sccs = get_sccs(alpha, beta, n)
+	return calculate_all(alpha, beta, sccs, n)
 
 
-def get_list_of_edges(alpha, beta, n):
-	s1 = Switch(0, 4)
-	s2 = Switch(1, 5)
-	s3 = Switch(2, 6)
-	s4 = Switch(3, 7)
-	e1 = Edge(s1, s3, 1, 1)
-	e2 = Edge(s2, s3, 0, 1)
-	e3 = Edge(s4, s4, 0, 1)
-	e4 = Edge(s4, s4, 1, 1)
-
-	return [e1, e2, e3, e4]
-
-
-def get_sccs(edges, switches):
+def calculate_all(alpha, beta, sccs, n):
 	"""
-	Return a list of all the strongly connected components in the graph.
-	Each element of the list points to a list of switches that are a part of a sccs.
+	Traverse all possible permutations of switches/SCCs, and recursively calculate the probability
+	 n
+	B
+	 (alpha->beta)
 	"""
-	sccs = []
+	benes_sum = 0
+	half_n = n / 2
+	denom = 1.0 / (2 ** get_num_of_switches(sccs))
 
-	return sccs
+	for perm in range(2 ** len(sccs)):
+		# Get the states of all the *relevant* switches
+		top_switches = calculate_switches(sccs, perm)
+		alpha_left = []
+		alpha_right = []
+		beta_left = []
+		beta_right = []
+
+		for i in range(len(alpha)):
+			src = alpha[i]
+			dest = beta[i]
+
+			switch_state = top_switches[get_lower(src, half_n)]
+			update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alpha_right, beta_right, half_n)
+
+		alpha_right = [get_lower(val, half_n) for val in alpha_right]
+		beta_right = [get_lower(val, half_n) for val in beta_right]
+
+		benes_sum += calculate_benes(alpha_left, beta_left, half_n) * calculate_benes(alpha_right, beta_right, half_n)
+
+	return denom * benes_sum
 
 
-def get_switches(edges):
+def get_num_of_switches(sccs):
 	"""
-	Return all the switches that appear in the edges
+	Returns the total number of switches involved
 	"""
-	switches = set()
-	for edge in edges:
-		switches.add(edge.switch1)
-		switches.add(edge.switch2)
+	num_of_switches = 0
+	for j in range(len(sccs)):
+		scc = sccs[j]
+		for sub_scc in scc:
+			num_of_switches += len(sub_scc)
 
-	return switches
+	return num_of_switches
+
+
+def update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alpha_right, beta_right, half_n):
+	"""
+	Depending on the state of the switch and the source value, add to/from values to either the
+	left or the right side, for the recursion
+	"""
+	if switch_state == ON:
+		if src < half_n:
+			alpha_right.append(src + half_n)
+			beta_right.append(get_upper(dest, half_n))
+		else:
+			alpha_left.append(src - half_n)
+			beta_left.append(get_lower(dest, half_n))
+	else:
+		if src < half_n:
+			alpha_left.append(src)
+			beta_left.append(get_lower(dest, half_n))
+		else:
+			alpha_right.append(src)
+			beta_right.append(get_upper(dest, half_n))
+
+
+def get_upper(val, half_n):
+	return val if val > half_n else val + half_n
+
+
+def get_lower(val, half_n):
+	return val if val < half_n else val - half_n
+
+
+def calculate_switches(sccs, perm):
+	"""
+	Create maps from top switches to their current state, dependant on
+	the SCCs and the current permutation
+	"""
+	# Create an empty lists for the top/bottom switches
+	top_switches = dict()
+
+	for j in range(len(sccs)):
+		scc = sccs[j]
+
+		# Get the j'th bit
+		c = 1 << j
+
+		# If the j'th bit in i is up, this scc should start from an on switch
+		starting_state = ON if bin(perm & c)[2] == '1' else OFF
+
+		# Iterate over
+		for sub_scc in scc:
+			for switch in sub_scc:
+				# Update the value of the switch
+				if switch.top:
+					top_switches[switch.left] = starting_state
+			# Flip the state, because we've passed a dotted edge
+			starting_state = ON if starting_state == OFF else OFF
+
+	return top_switches
+
+
+def calculate_benes_2(alpha, beta, n):
+	if len(alpha) != 2:
+		raise StandardError("Alpha is not of length 2")
+
+	d = get_diff_index(alpha[0], alpha[1])
+	r = get_diff_index(beta[0], beta[1])
+
+	result = 1.0 / (n ** 2)
+
+	if d == r:
+		return result
+	else:
+		return result + (2.0 ** d) / (n ** 3)
+
+if __name__ == '__main__':
+	print calculate_benes((1, 5), (2, 6), 8)
