@@ -1,9 +1,10 @@
 """List of strongly connected components - a list of edges"""
 
 class Switch:
-    def __init__(self, start, end):
+    def __init__(self, start, end, top):
         self.start = start
         self.end = end
+        self.top = top
 
 class Edge:
     def __init__(self, switch1, switch2, cross_half, switch1_index):
@@ -28,15 +29,21 @@ def validate(a, b, n):
         return False
     return True
 
+def get_all_switches(n):
+    switches = []
+    for top in [True, False]:
+        for i in range(n/2):
+            switches[i] = Switch(i, n/2 + i, top)
+    return switches
 
-def get_containing_switch(switches, ball):
+def get_containing_switch(switches, ball, top):
     """
     :param switches:
     :param ball:
     :return: First switch containing the given ball, at any index
     """
     for switch in switches:
-        if (switch.start == ball or switch.end == ball):
+        if ((switch.start == ball or switch.end == ball) and switch.top == top):
             return switch
     return None
 
@@ -48,18 +55,48 @@ def get_list_of_edges(alpha, beta, n):
     :param n:
     :return: List of edges that should be in the switch graph matching the permutation
     """
-    if (not validate(alpha.length, beta.length, n)):
+    if (not validate(len(alpha), len(alpha), n)):
         return
 
-    switches = []
-    for i in range(n/2):
-        switches[i] = Switch(i, n/2 + i)
-
+    switches = get_all_switches(n)
     edges = []
-    for i in range(alpha.length):
+    for i in range(len(alpha)):
         cross_half = 0 if (beta[i] - alpha[i] < n/2) else 1
         switch1_index = 0 if (alpha[i] < n/2) else 1
-        switch1 = get_containing_switch(switches, alpha[i])
-        switch2 = get_containing_switch(switches, beta[i])
+        switch1 = get_containing_switch(switches, alpha[i], True)
+        switch2 = get_containing_switch(switches, beta[i], False)
         edges.append(Edge(switch1, switch2, cross_half, switch1_index))
     return edges
+
+def get_switch_neighbours(edges, switch, switches):
+    """
+    :param edges:
+    :param switch:
+    :return: All switches that are connected to given switch by an edge
+    """
+    neighbours = []
+    for edge in edges:
+        if (edge.switch1 == switch):
+            neighbours.append(edge.switch2)
+        if (edge.switch2 == switch):
+            neighbours.append(edge.switch1)
+    return neighbours
+
+def get_list_of_components(edges, n):
+    """
+    :param edges:
+    :return:
+    """
+    components = []
+    switches = get_all_switches(n)
+    while (len(queue) > switches):
+        if (len(queue) == 0):
+            queue = [switches.pop()]
+            components.append([[queue[0]]])
+        current = queue.pop()
+
+        for neighbour in get_switch_neighbours(edges, current):
+            if (switches.count(neighbour) > 0):
+                switches.remove(neighbour)
+                queue.insert(0, neighbour)
+    return components
