@@ -1,9 +1,9 @@
 """List of strongly connected components - a list of edges"""
 
 class Switch:
-    def __init__(self, start, end, top):
-        self.start = start
-        self.end = end
+    def __init__(self, left, right, top):
+        self.left = left
+        self.right = right
         self.top = top
 
 class Edge:
