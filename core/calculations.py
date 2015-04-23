@@ -1,4 +1,4 @@
-from core.graph import get_sccs
+from core.graph import get_sccs, get_diff_index
 
 ON = 1
 OFF = 0
@@ -47,6 +47,8 @@ def calculate_all(alpha, beta, sccs, n):
 
 		alpha_right = [get_lower(val, half_n) for val in alpha_right]
 		beta_right = [get_lower(val, half_n) for val in beta_right]
+		alpha_left = [get_lower(val, half_n) for val in alpha_left]
+		beta_left = [get_lower(val, half_n) for val in beta_left]
 
 		benes_sum += calculate_benes(alpha_left, beta_left, half_n) * calculate_benes(alpha_right, beta_right, half_n)
 
@@ -88,7 +90,7 @@ def update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alph
 
 
 def get_upper(val, half_n):
-	return val if val > half_n else val + half_n
+	return val if val >= half_n else val + half_n
 
 
 def get_lower(val, half_n):
@@ -107,10 +109,10 @@ def calculate_switches(sccs, perm):
 		scc = sccs[j]
 
 		# Get the j'th bit
-		c = 1 << j
+		bit = 1 << j
 
 		# If the j'th bit in i is up, this scc should start from an on switch
-		starting_state = ON if bin(perm & c)[2] == '1' else OFF
+		starting_state = ON if bin(perm & bit)[2] == '1' else OFF
 
 		# Iterate over
 		for sub_scc in scc:
@@ -133,10 +135,22 @@ def calculate_benes_2(alpha, beta, n):
 
 	result = 1.0 / (n ** 2)
 
-	if d == r:
+	if d != r:
 		return result
 	else:
 		return result + (2.0 ** d) / (n ** 3)
 
 if __name__ == '__main__':
-	print calculate_benes((1, 5), (2, 6), 8)
+	n = 16
+	for a in range(n):
+		for b in range(n):
+			for c in range(n):
+				for d in range(n):
+					if a == b or c == d:
+						continue
+
+					c1 = calculate_benes((a, b), (c, d), n)
+					c2 = calculate_benes_2((a, b), (c, d), n)
+
+					if c1 != c2:
+						print "Incorrect value for: (%s, %s) -> (%s, %s)" % (a, b, c, d)
