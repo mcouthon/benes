@@ -1,6 +1,7 @@
 import math
 import numpy
 from numpy import linalg as LA
+import calculations
 
 class matrix(object):
     def nCr(n,r):
@@ -11,16 +12,22 @@ class matrix(object):
         self.n = n
         self.q = q
         f = math.factorial
-        size = math.floor(f(n) / f(q) / f(n-q))
+        size = int(math.floor(f(n) / f(n-q)))
         self.r = size
         self.c = size
         self.m = numpy.zeros([self.r,self.c],float)
+        print "Matrix Size: " + str(self.r) + "x" + str(self.c)
+        # calculate upper diagonal matrix
         for i in range(0,self.r):
-            for j in range(0,self.c):
-                if (i==j):
-                    self.m[i,j] = 1.0;
-
-        self.m = numpy.matrix([[1, 2], [2, 1]])
+            alpha = self.toBaseN(self.n,self.q,i)
+            for j in range(i,self.c):
+                beta = self.toBaseN(self.n,self.q,j)
+                #print alpha + ("->",) + beta
+                self.m[i,j] = calculations.calculate_benes(alpha, beta, n);
+        # fill in symmetric part
+        t = self.m.transpose()
+        numpy.fill_diagonal(t,0)
+        self.m = self.m + t
 
     def ev(self):
         w, v = LA.eigh(self.m);
@@ -66,16 +73,22 @@ class matrix(object):
         l.reverse()
         return tuple(l)
 
+    def isSymmetric(self):
+        return numpy.allclose(self.m.transpose(), self.m)
+
+    def P_alpha_beta(self, alpha,beta):
+        i = self.fromBaseN(self.n,alpha)
+        j = self.fromBaseN(self.n,beta)
+        return self.m[i,j]
+
 
 
 def test():
-    m = matrix(2,1)
-    #t = (1,0,0)
-    #print(m.fromBaseN(2,t))
-    #print(m.toBaseN(2,3,4))
-    print(m.power(3))
-
-
+    m = matrix(8,2)
+    print m.m
+    print m.isSymmetric()
+    print m.ev()
+    #print(m.power(3))
 test()
 
 
