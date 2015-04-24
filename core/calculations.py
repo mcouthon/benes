@@ -1,3 +1,6 @@
+import time
+import timeit
+import itertools
 from core.graph import get_sccs, get_diff_index
 
 ON = 1
@@ -42,13 +45,8 @@ def calculate_all(alpha, beta, sccs, n):
 			src = alpha[i]
 			dest = beta[i]
 
-			switch_state = top_switches[get_lower(src, half_n)]
+			switch_state = top_switches[src if src < half_n else src - half_n]
 			update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alpha_right, beta_right, half_n)
-
-		alpha_right = [get_lower(val, half_n) for val in alpha_right]
-		beta_right = [get_lower(val, half_n) for val in beta_right]
-		alpha_left = [get_lower(val, half_n) for val in alpha_left]
-		beta_left = [get_lower(val, half_n) for val in beta_left]
 
 		benes_sum += calculate_benes(alpha_left, beta_left, half_n) * calculate_benes(alpha_right, beta_right, half_n)
 
@@ -73,28 +71,22 @@ def update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alph
 	Depending on the state of the switch and the source value, add to/from values to either the
 	left or the right side, for the recursion
 	"""
+	dest = dest if dest < half_n else dest - half_n
+
 	if switch_state == ON:
 		if src < half_n:
-			alpha_right.append(src + half_n)
-			beta_right.append(get_upper(dest, half_n))
+			alpha_right.append(src)
+			beta_right.append(dest)
 		else:
 			alpha_left.append(src - half_n)
-			beta_left.append(get_lower(dest, half_n))
+			beta_left.append(dest)
 	else:
 		if src < half_n:
 			alpha_left.append(src)
-			beta_left.append(get_lower(dest, half_n))
+			beta_left.append(dest)
 		else:
-			alpha_right.append(src)
-			beta_right.append(get_upper(dest, half_n))
-
-
-def get_upper(val, half_n):
-	return val if val >= half_n else val + half_n
-
-
-def get_lower(val, half_n):
-	return val if val < half_n else val - half_n
+			alpha_right.append(src - half_n)
+			beta_right.append(dest)
 
 
 def calculate_switches(sccs, perm):
@@ -140,17 +132,25 @@ def calculate_benes_2(alpha, beta, n):
 	else:
 		return result + (2.0 ** d) / (n ** 3)
 
+
+def runner(n=8, repetitions=1):
+	# for i in itertools.repeat(None, repetitions):
+	for i in range(repetitions):
+		t1 = time.time()
+		for a in range(n):
+			for b in range(n):
+				for c in range(n):
+					for d in range(n):
+						if a == b or c == d:
+							continue
+
+						c1 = calculate_benes((a, b), (c, d), n)
+						c2 = calculate_benes_2((a, b), (c, d), n)
+
+						if c1 != c2:
+							print "Incorrect value for: (%s, %s) -> (%s, %s)" % (a, b, c, d)
+		print 'Repetition no.', i + 1, time.time() - t1
+
 if __name__ == '__main__':
-	n = 16
-	for a in range(n):
-		for b in range(n):
-			for c in range(n):
-				for d in range(n):
-					if a == b or c == d:
-						continue
 
-					c1 = calculate_benes((a, b), (c, d), n)
-					c2 = calculate_benes_2((a, b), (c, d), n)
-
-					if c1 != c2:
-						print "Incorrect value for: (%s, %s) -> (%s, %s)" % (a, b, c, d)
+	runner(8, 10)
