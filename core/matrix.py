@@ -1,9 +1,7 @@
 import math
 import numpy
 from numpy import linalg as LA
-import scipy
-#import sympy
-# http://stackoverflow.com/questions/6876377/numpy-arbitrary-precision-linear-algebra
+import sympy
 import calculations
 import itertools
 
@@ -15,7 +13,7 @@ class matrix(object):
         size = int(math.floor(f(n) / f(n-q)))
         self.r = size
         self.c = size
-        self.m = numpy.zeros([self.r,self.c],numpy.longdouble)
+        self.m=sympy.Matrix(numpy.zeros([self.r,self.c]))
         self.indicesToVectors = []
         self.vectorsToIndices = {}
 
@@ -48,7 +46,9 @@ class matrix(object):
         return self.m[i,j]
 
     def getEigenvalues(self):
-        w, v = LA.eigh(self.m);
+        #w, v = LA.eigh(self.m);
+        #w,v = scipy.linalg.eig(self.m)
+        w = self.m.eigenvals();
         return w;
 
     def getDiagonal(self):
@@ -135,7 +135,7 @@ def test():
     #print m.getDiagonal()
     print m.getEigenvalues()
     #print m.getEigenvalueSet()
-    print m.getRoundEigevalueSet()
+    #print m.getRoundEigevalueSet()
 test()
 
 
