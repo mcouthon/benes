@@ -17,7 +17,7 @@ class matrix(object):
         # choose matrix type
         self.isSymbolic = isSymbolic
         if (isSymbolic == True):
-            self.m=sympy.Matrix(numpy.zeros([self.r,self.c]))
+            self.m=sympy.Matrix(numpy.zeros([self.r,self.c]),dtype=sympy.float)
         else:
             self.m=numpy.zeros([self.r,self.c],dtype=numpy.float64)
 
@@ -81,10 +81,17 @@ class matrix(object):
             for j in range(0,self.c):
                 beta = self.indicesToVectors[j]
                 expected = self.getExpectedProb(alpha,beta)
-                if (expected == 0):
+                #if (expected == 0):
+                    #count = count + 1
+                if ((expected != 0) & (expected != self.m[i,j])):
                     count = count + 1
-                #if (expected != self.m[i,j]):
-                    #print (str(alpha) + "->" + str(beta))
+                    tt1 = self.getTripletType(alpha)
+                    tt2 = self.getTripletType(beta)
+                    v = str(alpha) + "->" + str(beta) + "expected: " + str(expected) + "actual:" + str(self.m[i,j])
+                    k = str(tt1) + "->" + str(tt2)
+                    if (k not in self.unhandledTypes):
+                        self.unhandledTypes[k]=v
+
         return count
 
     def checkProbQ2(self, p):
@@ -171,6 +178,29 @@ class matrix(object):
             return True
         return False
 
+
+    @staticmethod
+    def isrrd(t):
+        """
+        is of type [r,r,d]
+        :param t:
+        :return:
+        """
+        if ((t[0] == t[1]) & (t[1] < t[2])):
+            return True
+        return False
+
+    @staticmethod
+    def isrdr(t):
+        """
+        is of type [r,d,r]
+        :param t:
+        :return:
+        """
+        if ((t[0] == t[2]) & (t[1] > t[0])):
+            return True
+        return False
+
     @staticmethod
     def iskll(t):
         """
@@ -203,7 +233,7 @@ class matrix(object):
         if (self.isllk(t)):
             return (t[2],t[1])
         if (self.islkl(t)):
-            return (t[1],t[1])
+            return (t[1],t[2])
         if (self.iskll(t)):
             return (t[0],t[2])
         print "get kl" + str(t)
@@ -211,89 +241,185 @@ class matrix(object):
     def get_dr(self, t):
         if (self.isdrr(t)):
             return (t[0],t[1])
+        if (self.isrrd(t)):
+            return (t[2],t[1])
+        if (self.isrdr(t)):
+            return (t[1],t[0])
         print "get dr" + str(t)
+
+    @staticmethod
+    def f_n3(n):
+        return (float(1.0/(pow(n,3.0))))
+
+    @staticmethod
+    def f_n3_2dn4(n,d):
+        return (float(1.0/(pow(n,3.0)))) + float(pow(2.0,d)/(pow(n,4.0)))
+
+    @staticmethod
+    def f_n3_22dn4(n,r):
+        return (float(1.0/(pow(n,3.0))) + float(2*(pow(2.0,r)/(pow(n,4.0)))))
+
+    @staticmethod
+    def f_n3_2dn4_2drn5(n,d,r):
+        return (float(1.0/(pow(n,3.0))) + float(pow(2.0,d)/(pow(n,4.0))) + float((pow(2.0,r)/(pow(n,4.0)))) + float((pow(2.0,d+r)/(pow(n,5.0)))))
+
+    @staticmethod
+    def f_n3_22dn4_22drn5(n,d,r):
+       return (float(1.0/(pow(n,3.0))) + float(pow(2.0,d)/(pow(n,4.0))) + float(2*(pow(2.0,r)/(pow(n,4.0)))) + float(2*(pow(2.0,d+r)/(pow(n,5.0)))))
+
 
     def getExpectedProb(self, t1, t2):
         tt1 = self.getTripletType(t1)
         tt2 = self.getTripletType(t2)
 
+        # [d,r,r] -> [k,l,l]    |   [d,r,r] <- [k,l,l]
+        # [d,r,r] -> [l,k,l]    |   [d,r,r] <- [l,k,l]
+        # [d,r,r] -> [l,l,k]    |   [d,r,r] -> [l,l,k]
         if ((self.isdrr(tt1)) & (self.iskll(tt2))):
             d,r = self.get_dr(tt1)
             k,l = self.get_kl(tt2)
-
             if ((d != k) & (d != l) & (r != k) & (r != l)):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if ((k == d) & (l != r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,d)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,d)
             if ((k == d) & (l == r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,d)/(pow(8.0,4.0))) + float(2*(pow(2.0,r)/(pow(8.0,4.0)))) + float(2*(pow(2.0,d+r)/(pow(8.0,5.0)))))
+                return self.f_n3_22dn4_22drn5(8,d,r)
             if (k == r):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if (l == d):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if (l == r):
-                return (float(1.0/(pow(8.0,3.0))) + float(2*(pow(2.0,r)/(pow(8.0,4.0)))))
-
+                return self.f_n3_22dn4(8,r)
         if (((self.isdrr(tt1)) & (self.isllk(tt2))) | ((self.isdrr(tt1)) & (self.islkl(tt2)))):
             d,r = self.get_dr(tt1)
             k,l = self.get_kl(tt2)
-
             if ((d != k) & (d != l) & (r != k) & (r != l)):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if ((k == d) & (l != r)):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if ((k == d) & (l == r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))) + float(pow(2.0,r+d)/(pow(8.0,5.0))))
+                return self.f_n3_2dn4_2drn5(8,d,r)
             if (k == r):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,r)
             if (l == d):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,d)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,d)
             if (l == r):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))))
-
+                return self.f_n3_2dn4(8,r)
         if (((self.isdrr(tt2)) & (self.isllk(tt1))) | ((self.isdrr(tt2)) & (self.islkl(tt1)))):
             d,r = self.get_dr(tt2)
             k,l = self.get_kl(tt1)
 
             if ((d != k) & (d != l) & (r != k) & (r != l)):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if ((k == d) & (l != r)):
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3(8)
             if ((k == d) & (l == r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))) + float(pow(2.0,r+d)/(pow(8.0,5.0))))
+                return self.f_n3_2dn4_2drn5(8,d,r)
             if (k == r):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,r)
             if (l == d):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,d)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,d)
             if (l == r):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,r)/(pow(8.0,4.0))))
+                return self.f_n3_2dn4(8,r)
 
-        # [l,k,l] -> [l,k,l]
-        if ((self.islkl(tt2)) & (self.islkl(tt1))):
-            d,r = self.get_kl(tt1)
+        # [r,r,d] -> [l,l,k]    |   [r,r,d] <- [l,l,k]
+        # [r,r,d] -> [l,k,l]    |   [r,r,d] <- [l,k,l]
+        # [r,r,d] -> [k,l,l]    |   [r,r,d] -> [k,l,l]
+        if ((self.isrrd(tt1)) & (self.isllk(tt2))):
+            d,r = self.get_dr(tt1)
             k,l = self.get_kl(tt2)
-
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3_2dn4(8,d)
             if ((k == d) & (l == r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,k)/(pow(8.0,4.0))) + float(2*(pow(2.0,l)/(pow(8.0,4.0)))) + float(2*(pow(2.0,k+l)/(pow(8.0,5.0)))))
-
-        # [l,l,k] -> [l,l,k]
-        if ((self.isllk(tt2)) & (self.isllk(tt1))):
-            d,r = self.get_kl(tt1)
+                return self.f_n3_22dn4_22drn5(8,d,r)
+            if (k == r):
+                return self.f_n3(8)
+            if (l == d):
+                return self.f_n3(8)
+            if (l == r):
+                return self.f_n3_22dn4(8,r)
+        if (((self.isrrd(tt1)) & (self.iskll(tt2))) | ((self.isrrd(tt1)) & (self.islkl(tt2)))):
+            d,r = self.get_dr(tt1)
             k,l = self.get_kl(tt2)
-
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3(8)
             if ((k == d) & (l == r)):
-                return (float(1.0/(pow(8.0,3.0))) + float(pow(2.0,d)/(pow(8.0,4.0))) + float(2*(pow(2.0,r)/(pow(8.0,4.0)))) + float(2*(pow(2.0,d+r)/(pow(8.0,5.0)))))
-            else: #l,l,k -> r,r,d !
-                return (float(1.0/(pow(8.0,3.0))))
+                return self.f_n3_2dn4_2drn5(8,d,r)
+            if (k == r):
+                return self.f_n3_2dn4(8,r)
+            if (l == d):
+                return self.f_n3_2dn4(8,d)
+            if (l == r):
+                return self.f_n3_2dn4(8,r)
+        if (((self.isrrd(tt2)) & (self.iskll(tt1))) | ((self.isrrd(tt2)) & (self.islkl(tt1)))):
+            d,r = self.get_dr(tt2)
+            k,l = self.get_kl(tt1)
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3(8)
+            if ((k == d) & (l == r)):
+                return self.f_n3_2dn4_2drn5(8,d,r)
+            if (k == r):
+                return self.f_n3_2dn4(8,r)
+            if (l == d):
+                return self.f_n3_2dn4(8,d)
+            if (l == r):
+                return self.f_n3_2dn4(8,r)
 
-        if ((self.islkl(tt1)) & (self.isllk(tt2))):
-            return 0
+        # [r,d,r] -> [l,k,l]    |   [r,d,r] <- [l,k,l]
+        # [r,d,r] -> [l,l,k]    |   [r,d,r] <- [l,l,k]
+        # [r,d,r] -> [k,l,l]    |   [r,d,r] <- [k,l,l]
+        if ((self.isrdr(tt1)) & (self.islkl(tt2))):
+            d,r = self.get_dr(tt1)
+            k,l = self.get_kl(tt2)
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3_2dn4(8,d)
+            if ((k == d) & (l == r)):
+                return self.f_n3_22dn4_22drn5(8,d,r)
+            if (k == r):
+                return self.f_n3(8)
+            if (l == d):
+                return self.f_n3(8)
+            if (l == r):
+                return self.f_n3_22dn4(8,r)
+        if (((self.isrdr(tt1)) & (self.iskll(tt2))) | ((self.isrdr(tt1)) & (self.isllk(tt2)))):
+            d,r = self.get_dr(tt1)
+            k,l = self.get_kl(tt2)
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3(8)
+            if ((k == d) & (l == r)):
+                return self.f_n3_2dn4_2drn5(8,d,r)
+            if (k == r):
+                return self.f_n3_2dn4(8,r)
+            if (l == d):
+                return self.f_n3_2dn4(8,d)
+            if (l == r):
+                return self.f_n3_2dn4(8,r)
+        if (((self.isrdr(tt2)) & (self.iskll(tt1))) | ((self.isrdr(tt2)) & (self.isllk(tt1)))):
+            d,r = self.get_dr(tt2)
+            k,l = self.get_kl(tt1)
+            if ((d != k) & (d != l) & (r != k) & (r != l)):
+                return self.f_n3(8)
+            if ((k == d) & (l != r)):
+                return self.f_n3(8)
+            if ((k == d) & (l == r)):
+                return self.f_n3_2dn4_2drn5(8,d,r)
+            if (k == r):
+                return self.f_n3_2dn4(8,r)
+            if (l == d):
+                return self.f_n3_2dn4(8,d)
+            if (l == r):
+                return self.f_n3_2dn4(8,r)
 
-        if ((self.isllk(tt1)) & (self.islkl(tt2))):
-            return 0
-
-        if ((self.islkl(tt1)) & (self.islkl(tt2))):
-            return 0
 
         v = str(t1) + "->" + str(t2)
         k = str(tt1) + "->" + str (tt2)
@@ -317,8 +443,8 @@ class matrix(object):
 
 
 def test_probs():
-    m = matrix(8,1)
-    print m.getExpectedProb((0, 1, 3),(0, 4, 1))
+    m = matrix(8,1,False)
+    print m.getExpectedProb((0, 1, 5),(0, 1, 4))
 
 def test_q2():
     m = matrix(8,2,True)
@@ -326,9 +452,10 @@ def test_q2():
 
 def test_q3():
     m = matrix(8,3,False)
-    #print m.checkPorbQ3();
-    #print m.unhandledTypes
-    print m.getRoundEigevalueSet()
+    print m.checkPorbQ3();
+    print m.unhandledTypes
+    #print m.getRoundEigevalueSet()
     #print m.getEigenvalues()
 
-test_q3()
+test_probs()
+#test_q3()
