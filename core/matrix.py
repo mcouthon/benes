@@ -1,12 +1,10 @@
-import math
 import numpy
 from numpy import linalg as LA
 import sympy
+import timeit
+import math
 import calculations
 import itertools
-import scipy
-import scipy.linalg
-
 
 class matrix(object):
     def __init__(self, n, q, isSymbolic):
@@ -264,7 +262,7 @@ class matrix(object):
 
     @staticmethod
     def f_n3_2dn4_2drn5(n,d,r):
-        return (float(1.0/(pow(n,3.0))) + float(pow(2.0,d)/(pow(n,4.0))) + float((pow(2.0,r)/(pow(n,4.0)))) + float((pow(2.0,d+r)/(pow(n,5.0)))))
+        return float(1.0/(pow(n,3.0))) + float(pow(2.0,r)/(pow(n,4.0))) + float((pow(2.0,r +d)/(pow(n,5.0))))
 
     @staticmethod
     def f_n3_22dn4_22drn5(n,d,r):
@@ -455,11 +453,10 @@ def test_q2():
 
 def test_q3():
     m = matrix(8,3,False)
-    print m.checkPorbQ3();
+    print m.checkPorbQ3()
     print m.unhandledTypes
     print m.getRoundEigevalueSet()
     # print m.getEigenvalues()
 
-# test_probs()
 if __name__ == '__main__':
-    test_q3()
+    test_probs()

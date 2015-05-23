@@ -1,7 +1,6 @@
 import time
-import timeit
-import itertools
 from core.graph import get_sccs, get_diff_index
+from benes_3 import calculate_benes_3
 
 ON = 1
 OFF = 0
@@ -133,6 +132,10 @@ def calculate_benes_2(alpha, beta, n):
         return result + (2.0 ** d) / (n ** 3)
 
 
+
+
+
+
 def runner(n=8, repetitions=1):
     # for i in itertools.repeat(None, repetitions):
     for i in range(repetitions):
@@ -152,5 +155,9 @@ def runner(n=8, repetitions=1):
         print 'Repetition no.', i + 1, time.time() - t1
 
 if __name__ == '__main__':
+    alpha = (0, 1, 5)
+    beta = (0, 1, 4)
 
-    runner(8, 10)
+    print calculate_benes_3(alpha, beta, 8)
+    print calculate_benes(alpha, beta, 8)
+    # runner(8, 1)

@@ -17,6 +17,9 @@ class Edge(object):
         self.cross_half = cross_half
         self.switch1_index = switch1_index
 
+    def __repr__(self):
+        return "Edge<%r, %r, %s, %s>" % (self.switches[0], self.switches[1], self.cross_half, self.switch1_index)
+
 
 def validate(a, b, n):
     """
@@ -110,16 +113,12 @@ def get_white_neighbour(edges, switch, blacklist):
     :return: First edge neighbouring the given switch, with a switch not in the blacklist
     """
     neighbours = get_switch_neighbours(edges, switch)
-    i = 0
-    found_new = False
-    while not found_new and i < len(neighbours):
+
+    for i in range(len(neighbours)):
         for j in range(2):
             if blacklist.count(neighbours[i].switches[j]) == 0:
-                found_new = True
-        i += 1
+                return neighbours[i]
 
-    if i < len(neighbours):
-        return neighbours[i]
     return None
 
 
