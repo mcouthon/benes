@@ -5,6 +5,8 @@ import timeit
 import math
 import calculations
 import itertools
+import scipy
+import scipy.linalg
 
 class matrix(object):
     def __init__(self, n, q, isSymbolic):
@@ -137,24 +139,6 @@ class matrix(object):
             d=math.floor(d/n)
         l.reverse()
         return tuple(l)
-
-    @staticmethod
-    def lowestSet(int_type):
-        low = (int_type & -int_type)
-        lowBit = -1
-        while (low):
-            low >>= 1
-            lowBit += 1
-        return(lowBit)
-
-    def getType(self, n,m):
-        """
-        return the lowest bit of difference between two numbers
-        :param n:
-        :param m:
-        :return:
-        """
-        return 1 + self.lowestSet(n^m)
 
     def getTripletType(self, t):
         """
