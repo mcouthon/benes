@@ -175,15 +175,11 @@ def runner_3(n=8, repetitions=1):
                                 c1 = calculate_benes((a, b, c), (d, e, f), n)
                                 c2 = calculate_benes_3((a, b, c), (d, e, f), n)
 
+                                if c1 != c2:
+                                    print c1, c2
+
         print 'Repetition no.', i + 1, time.time() - t1
 
 
 if __name__ == '__main__':
-    alpha = (0, 1, 2, 5)
-    beta = (0, 1, 2, 6)
-    n = 8
-
-    c1 = get_sccs(alpha, beta, n)
-    c2 = calculate_benes_3(alpha, beta, n)
-
-    # print c1
+    runner_3()
