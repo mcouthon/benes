@@ -137,24 +137,6 @@ class matrix(object):
         l.reverse()
         return tuple(l)
 
-    @staticmethod
-    def lowestSet(int_type):
-        low = (int_type & -int_type)
-        lowBit = -1
-        while (low):
-            low >>= 1
-            lowBit += 1
-        return(lowBit)
-
-    def getType(self, n,m):
-        """
-        return the lowest bit of difference between two numbers
-        :param n:
-        :param m:
-        :return:
-        """
-        return 1 + self.lowestSet(n^m)
-
     def getTripletType(self, t):
         """
         returns the type of a triplet, based on diffrences of it's members
