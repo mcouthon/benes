@@ -15,6 +15,7 @@ class typhus(object):
             if self.q.calculate_type(v) == self.d:
                 return v
 
+
     def generate_instances(self):
         d_vecs = []
         for v in self.q.generate_instances():

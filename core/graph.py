@@ -127,8 +127,6 @@ def get_white_neighbour(edges, switch, blacklist):
 
 def find_opening_edge(edges, queue):
     """
-    :param edges:
-    :param queue:
     :return: The first edge in the connected component
     """
     current_switch = 0
@@ -139,6 +137,8 @@ def find_opening_edge(edges, queue):
         current_edge = next_edge
         current_switch = 1 - current_switch
         next_edge = get_white_neighbour(edges, current_edge.switches[current_switch], blacklist)
+        if next_edge == current_edge:
+            break
 
     queue.append(current_edge)
     edges.remove(current_edge)

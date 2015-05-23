@@ -50,11 +50,21 @@ class q_vec(object):
         return d
 
     def generate_types(self):
-        type_len = int(self.q * (self.q - 1) / 2)
-        d_len = int(math.log(self.n))
-        types = [typhus([1 for i in range(type_len)], self)]
-        for i in range(d_len ** type_len):
-            types.append(typhus(inc_type(types[-1].get_type()), self))
+        # type_len = int(self.q * (self.q - 1) / 2)
+        # d_len = int(math.log(self.n))
+        # types = [typhus([1 for i in range(type_len)], self)]
+        # for i in range(d_len ** type_len):
+        #     types.append(typhus(inc_type(types[-1].get_type()), self))
+        # return types
+        types = []
+        for v in self.generate_instances():
+            current_type = self.calculate_type(v)
+            already_there = False
+            for t in types:
+                if t.get_type() == current_type:
+                    already_there = True
+            if not already_there:
+                types.append(typhus(current_type, self))
         return types
 
     def build_reduced_matrix(self):
@@ -71,7 +81,14 @@ class q_vec(object):
 Testing
 """
 if __name__ == '__main__':
-    q42 = q_vec(8, 2)
-    for c in (q42.build_reduced_matrix()):
+    # q82 = q_vec(8, 2)
+    # for c in (q82.build_reduced_matrix()):
+    #     print(c)
+    # print
+    q83 = q_vec(16, 3)
+    for c in (q83.build_reduced_matrix()):
         print(c)
-
+    # print
+    # q84 = q_vec(8, 4)
+    # for c in (q84.build_reduced_matrix()):
+    #     print(c)

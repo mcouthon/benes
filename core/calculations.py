@@ -179,12 +179,11 @@ def runner_3(n=8, repetitions=1):
 
 
 if __name__ == '__main__':
-    alpha = (1, 2, 5)
-    beta = (4, 5, 1)
+    alpha = (0, 1, 2, 5)
+    beta = (0, 1, 2, 6)
     n = 8
 
-    c1 = calculate_benes(alpha, beta, n)
+    c1 = get_sccs(alpha, beta, n)
     c2 = calculate_benes_3(alpha, beta, n)
 
-    print c1
-    print c2
+    # print c1
