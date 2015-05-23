@@ -6,6 +6,9 @@ class Switch(object):
         self.left = left
         self.right = right
         self.top = top
+    
+    def __repr__(self):
+        return "Switch<%r, %r, %r>" % (self.left, self.top, self.right)
 
 
 class Edge(object):
