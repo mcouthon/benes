@@ -1,7 +1,6 @@
 import time
-import timeit
-import itertools
 from core.graph import get_sccs, get_diff_index
+from benes_3 import calculate_benes_3
 
 ON = 1
 OFF = 0
@@ -9,9 +8,9 @@ OFF = 0
 
 def calculate_benes(alpha, beta, n):
     """
-	Calculate the probability of an ordered set alpha to get to the ordered set beta
-	with n being the current size of the net
-	"""
+    Calculate the probability of an ordered set alpha to get to the ordered set beta
+    with n being the current size of the net
+    """
     if not alpha:
         return 1.0
 
@@ -24,11 +23,11 @@ def calculate_benes(alpha, beta, n):
 
 def calculate_all(alpha, beta, sccs, n):
     """
-	Traverse all possible permutations of switches/SCCs, and recursively calculate the probability
-	 n
-	B
-	 (alpha->beta)
-	"""
+    Traverse all possible permutations of switches/SCCs, and recursively calculate the probability
+     n
+    B
+     (alpha->beta)
+    """
     benes_sum = 0
     half_n = n / 2
     denom = 1.0 / (2 ** get_num_of_switches(sccs))
@@ -55,8 +54,8 @@ def calculate_all(alpha, beta, sccs, n):
 
 def get_num_of_switches(sccs):
     """
-	Returns the total number of switches involved
-	"""
+    Returns the total number of switches involved
+    """
     num_of_switches = 0
     for j in range(len(sccs)):
         scc = sccs[j]
@@ -68,9 +67,9 @@ def get_num_of_switches(sccs):
 
 def update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alpha_right, beta_right, half_n):
     """
-	Depending on the state of the switch and the source value, add to/from values to either the
-	left or the right side, for the recursion
-	"""
+    Depending on the state of the switch and the source value, add to/from values to either the
+    left or the right side, for the recursion
+    """
     dest = dest if dest < half_n else dest - half_n
 
     if switch_state == ON:
@@ -91,9 +90,9 @@ def update_alphas_and_betas(src, dest, switch_state, alpha_left, beta_left, alph
 
 def calculate_switches(sccs, perm):
     """
-	Create maps from top switches to their current state, dependant on
-	the SCCs and the current permutation
-	"""
+    Create maps from top switches to their current state, dependant on
+    the SCCs and the current permutation
+    """
     # Create an empty lists for the top/bottom switches
     top_switches = dict()
 
@@ -133,6 +132,10 @@ def calculate_benes_2(alpha, beta, n):
         return result + (2.0 ** d) / (n ** 3)
 
 
+
+
+
+
 def runner(n=8, repetitions=1):
     # for i in itertools.repeat(None, repetitions):
     for i in range(repetitions):
@@ -151,6 +154,10 @@ def runner(n=8, repetitions=1):
                             print "Incorrect value for: (%s, %s) -> (%s, %s)" % (a, b, c, d)
         print 'Repetition no.', i + 1, time.time() - t1
 
-
 if __name__ == '__main__':
-    runner(8, 10)
+    alpha = (0, 1, 5)
+    beta = (0, 1, 4)
+
+    print calculate_benes_3(alpha, beta, 8)
+    print calculate_benes(alpha, beta, 8)
+    # runner(8, 1)
