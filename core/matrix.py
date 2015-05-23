@@ -4,6 +4,9 @@ from numpy import linalg as LA
 import sympy
 import calculations
 import itertools
+import scipy
+import scipy.linalg
+
 
 class matrix(object):
     def __init__(self, n, q, isSymbolic):
@@ -17,9 +20,9 @@ class matrix(object):
         # choose matrix type
         self.isSymbolic = isSymbolic
         if (isSymbolic == True):
-            self.m=sympy.Matrix(numpy.zeros([self.r,self.c]),dtype=sympy.float)
+            self.m=sympy.Matrix(numpy.zeros([self.r,self.c]), dtype=sympy.float)
         else:
-            self.m=numpy.zeros([self.r,self.c],dtype=numpy.float64)
+            self.m=numpy.zeros([self.r,self.c], dtype=scipy.float128)
 
         self.indicesToVectors = []
         self.vectorsToIndices = {}
@@ -33,9 +36,9 @@ class matrix(object):
             i = i + 1
 
         # init matrix with base values
-        for i in range(0,self.r):
+        for i in range(0, self.r):
             alpha = self.indicesToVectors[i]
-            for j in range(0,self.c):
+            for j in range(0, self.c):
                 beta = self.indicesToVectors[j]
                 self.m[i,j] = calculations.calculate_benes(alpha, beta, n)
 
@@ -49,8 +52,8 @@ class matrix(object):
         if (self.isSymbolic == True):
             w = self.m.eigenvals();
         else:
-            w, v = LA.eigh(self.m);
-            #w,v = scipy.linalg.eig(self.m)
+            # w, v = LA.eigh(self.m);
+            w,v = scipy.linalg.eig(self.m)
 
         return w;
 
@@ -64,7 +67,7 @@ class matrix(object):
 
     # exponentiate matrix
     def getMatrixPower(self, p):
-        w, v = LA.eigh(self.m)
+        w, v = scipy.linalg.eigh(self.m)
         # eigenvector matrix
         P = numpy.matrix(v)
         # Diagonal = (P^t)MP
@@ -106,7 +109,7 @@ class matrix(object):
         return set(self.getEigenvalues())
 
     def getRoundEigevalueSet(self):
-        return set(numpy.round(self.getEigenvalues(),4))
+        return set(numpy.round(self.getEigenvalues(), 4))
 
     @staticmethod
     def fromBaseN(n,t):
@@ -454,8 +457,9 @@ def test_q3():
     m = matrix(8,3,False)
     print m.checkPorbQ3();
     print m.unhandledTypes
-    #print m.getRoundEigevalueSet()
-    print m.getEigenvalues()
+    print m.getRoundEigevalueSet()
+    # print m.getEigenvalues()
 
 # test_probs()
-test_q3()
+if __name__ == '__main__':
+    test_q3()
