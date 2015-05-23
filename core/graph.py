@@ -117,11 +117,16 @@ def get_white_neighbour(edges, switch, blacklist):
     """
     neighbours = get_switch_neighbours(edges, switch)
 
-    for i in range(len(neighbours)):
+    i = 0
+    found_new = False
+    while not found_new and i < len(neighbours):
         for j in range(2):
             if blacklist.count(neighbours[i].switches[j]) == 0:
-                return neighbours[i]
+                found_new = True
+        i += 1
 
+    if i < len(neighbours):
+        return neighbours[i]
     return None
 
 
@@ -137,8 +142,6 @@ def find_opening_edge(edges, queue):
         current_edge = next_edge
         current_switch = 1 - current_switch
         next_edge = get_white_neighbour(edges, current_edge.switches[current_switch], blacklist)
-        if next_edge == current_edge:
-            break
 
     queue.append(current_edge)
     edges.remove(current_edge)
