@@ -11,3 +11,6 @@ def get_matrix(*args):
         all_matrices[args] = matrix.matrix(*args)
         cPickle.dump(all_matrices, open(ALL_MATRICES_PATH, 'wb'))
     return all_matrices[args]
+
+def clear_cache():
+    cPickle.dump({}, open(ALL_MATRICES_PATH,'wb'), cPickle.HIGHEST_PROTOCOL)
