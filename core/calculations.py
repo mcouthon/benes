@@ -136,7 +136,7 @@ def calculate_benes_2(alpha, beta, n):
 
 
 
-def runner(n=8, repetitions=1):
+def runner_2(n=8, repetitions=1):
     # for i in itertools.repeat(None, repetitions):
     for i in range(repetitions):
         t1 = time.time()
@@ -154,10 +154,35 @@ def runner(n=8, repetitions=1):
                             print "Incorrect value for: (%s, %s) -> (%s, %s)" % (a, b, c, d)
         print 'Repetition no.', i + 1, time.time() - t1
 
-if __name__ == '__main__':
-    alpha = (0, 1, 5)
-    beta = (0, 1, 4)
 
-    print calculate_benes_3(alpha, beta, 8)
-    print calculate_benes(alpha, beta, 8)
-    # runner(8, 1)
+def runner_3(n=8, repetitions=1):
+    # for i in itertools.repeat(None, repetitions):
+    for i in range(repetitions):
+        t1 = time.time()
+        for a in range(n):
+            for b in range(n):
+                for c in range(n):
+                    for d in range(n):
+                        for e in range(n):
+                            for f in range(n):
+                                if a == b or a == c or b == c or d == e or d == f or e == f:
+                                    continue
+
+                                c1 = calculate_benes((a, b, c), (d, e, f), n)
+                                c2 = calculate_benes_3((a, b, c), (d, e, f), n)
+
+        print 'Repetition no.', i + 1, time.time() - t1
+
+
+if __name__ == '__main__':
+    runner_3()
+
+    alpha = (1, 2, 5)
+    beta = (4, 5, 1)
+    n = 8
+
+    c1 = calculate_benes(alpha, beta, n)
+    c2 = calculate_benes_3(alpha, beta, n)
+
+    print c1
+    print c2
