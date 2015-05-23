@@ -455,7 +455,7 @@ def test_q3():
     print m.checkPorbQ3();
     print m.unhandledTypes
     #print m.getRoundEigevalueSet()
-    #print m.getEigenvalues()
+    print m.getEigenvalues()
 
-test_probs()
-#test_q3()
+# test_probs()
+test_q3()
