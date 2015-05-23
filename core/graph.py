@@ -10,6 +10,9 @@ class Switch(object):
     def __repr__(self):
         return "Switch<%r, %r, %r>" % (self.left, self.top, self.right)
 
+    def __eq__(self, other):
+        return self.left == other.left and self.right == other.right and self.top == other.top
+
 
 class Edge(object):
     def __init__(self, switch1, switch2, cross_half, switch1_index):
