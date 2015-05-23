@@ -19,6 +19,6 @@ def get_prob_differences_per_power(mat, max_power):
 
 if __name__ == '__main__':
     # m = matrix.matrix(8,3,False)
-    m = matrix_cache.get_matrix(8, 4, False)
+    m = matrix_cache.get_matrix(8, 3, False)
     print 'getting prob differences..'
     print get_prob_differences_per_power(m, 3)

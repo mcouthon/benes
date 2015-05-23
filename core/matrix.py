@@ -5,6 +5,8 @@ import timeit
 import math
 import calculations
 import itertools
+import scipy
+import scipy.linalg
 
 class matrix(object):
     def __init__(self, n, q, isSymbolic):
