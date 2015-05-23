@@ -10,14 +10,6 @@ class typhus(object):
     def get_type(self):
         return self.d
 
-    def inc_type(self):
-        d_len = len(self.d)
-        j = d_len - 1
-        while (j > 0) and (self.d[j] == d_len):
-            self.d[j] == 1
-            j -= 1
-        self.d[j] += 1
-
     def generate_representative(self):
         for v in self.q.generate_instances():
             if self.q.calculate_type(v) == self.d:

@@ -1,4 +1,4 @@
-class edge(object):
+class Edge(object):
 	def __init__(self, first_switch, second_switch, moving_index, edge_full):
 		self.first_switch = first_switch
 		self.second_switch = second_switch

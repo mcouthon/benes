@@ -21,6 +21,16 @@ def get_differ_bit(n, m):
     """
     return 1 + lowest_set(n ^ m)
 
+def inc_type(d):
+    d_len = len(d)
+    new_d = [x for x in d]
+    j = d_len - 1
+    while (j > 0) and (new_d[j] == d_len):
+        new_d[j] == 1
+        j -= 1
+    new_d[j] += 1
+    return new_d
+
 class q_vec(object):
     def __init__(self, n, q):
         self.n = n
@@ -44,8 +54,7 @@ class q_vec(object):
         d_len = int(math.log(self.n))
         types = [typhus([1 for i in range(type_len)], self)]
         for i in range(d_len ** type_len):
-            types.append(typhus([x for x in types[-1].get_type()], self))
-            types[-1].inc_type()
+            types.append(typhus(inc_type(types[-1].get_type()), self))
         return types
 
     def build_reduced_matrix(self):
