@@ -12,6 +12,12 @@ def test_eigs(n,q,isSymbolic):
     print "Rounded eigs: " + str(m.get_round_eigevalue_set())
     print "All eigs: " + str(m.get_eigenvalue_set())
 
+def test_reduced(n,q,isSymbolic):
+    print "n: " + str(n) + "q: " + str(q) + "isSymbolic : " + str(isSymbolic)
+    m = matrix_factory.get_reduced_matrix(n,q,isSymbolic)
+    print "Rounded eigs: " + str(m.get_round_eigevalue_set())
+    print "All eigs: " + str(m.get_eigenvalue_set())
+
 def runner_q2(n=8, repetitions=1):
     for i in range(repetitions):
         t1 = time.time()
@@ -51,11 +57,12 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
     v = str(alpha) + "->" + str(beta) + "expected: " + str(ex) + "actual:" + str(actual)
     k = str(tt1) + "->" + str(tt2)
     if k not in ex_set:
-        set[k] = v
+        ex_set[k] = v
 
 if __name__ == '__main__':
+    test_reduced(8,2,False)
     #runner_q2(8, 1)
-    runner_q3(8, 3)
+    #runner_q3(8, 3)
     #test_eigs(8,2,False)
     #test_eigs(8,2,True)
     #test_eigs(8,3,False)

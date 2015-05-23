@@ -4,7 +4,7 @@ from numpy import linalg as LA
 import sympy
 import calculations
 import itertools
-import benes_3
+import q_vec
 #import scipy
 #import scipy.linalg
 
@@ -48,6 +48,26 @@ class matrix_factory(object):
 
         return matrix_instance
 
+    @staticmethod
+    def get_reduced_matrix(n, q, isSymbolic):
+
+
+        qv = q_vec.q_vec(n, q)
+        columns = qv.build_reduced_matrix()
+
+        matrix_instance = matrix()
+        matrix_instance.n = n
+        matrix_instance.q = q
+        matrix_instance.m = numpy.matrix(columns)
+
+        size = int(math.floor(math.factorial(n) / math.factorial(n-q)))     # (n)_q
+        matrix_instance.r = len(columns)                                  # rows
+        matrix_instance.c = len(columns)                                  # cols
+        matrix_instance.isSymbolic = isSymbolic
+        matrix_instance.matrix_type = 'REDUCED'
+
+        return matrix_instance
+
 class matrix(object):
     """
     matrix class, wrapper for linear algebra calculations in the project
@@ -69,8 +89,8 @@ class matrix(object):
         :return:
         """
         if (self.matrix_type == 'BENESH'):
-            i = self.vectorsToIndices(t1)
-            j = self.vectorsToIndices(t2)
+            i = self.vectorsToIndices[t1]
+            j = self.vectorsToIndices[t2]
         elif (self.matrix_type == 'REDUCED'):
             i = 0;
             j = 0;
