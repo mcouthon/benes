@@ -54,13 +54,17 @@ def calculate_all(alpha, beta, sccs, n):
 
 def get_num_of_switches(sccs):
     """
-    Returns the total number of switches involved
+    Returns the total number of *unique* switches involved
     """
+    unique_switches = set()
     num_of_switches = 0
     for j in range(len(sccs)):
         scc = sccs[j]
         for sub_scc in scc:
-            num_of_switches += len(sub_scc)
+            for switch in sub_scc:
+                if switch not in unique_switches:
+                    unique_switches.add(switch)
+                    num_of_switches += 1
 
     return num_of_switches
 
@@ -175,8 +179,6 @@ def runner_3(n=8, repetitions=1):
 
 
 if __name__ == '__main__':
-    runner_3()
-
     alpha = (1, 2, 5)
     beta = (4, 5, 1)
     n = 8
