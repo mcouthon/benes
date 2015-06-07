@@ -108,44 +108,34 @@ def extend_last_component(components, current_edge, current_switch):
         components[-1][-1].append(current_edge.switches[current_switch])
 
 
-def get_white_neighbour(edges, switch, blacklist):
-    """
-    :param edges:
-    :param switch:
-    :param blacklist:
-    :return: First edge neighbouring the given switch, with a switch not in the blacklist
-    """
-    neighbours = get_switch_neighbours(edges, switch)
-
-    i = 0
-    found_new = False
-    while not found_new and i < len(neighbours):
-        for j in range(2):
-            if blacklist.count(neighbours[i].switches[j]) == 0:
-                found_new = True
-        i += 1
-
-    if i < len(neighbours):
-        return neighbours[i]
-    return None
+def get_neighbor_edge(edges, current_switch, old_switches):
+    possible_edges = filter(lambda edge: edge not in (x[0] for x in old_switches), edges)
+    actual_switch = current_switch[0].switches[current_switch[1]]
+    for edge in possible_edges:
+        if edge.switches[0] == actual_switch:
+            return edge, 1
+        if edge.switches[1] == actual_switch:
+            return edge, 0
+    return False
 
 
 def find_opening_edge(edges, queue):
     """
-    :return: The first edge in the connected component
+    adds to queue the opening edge
+    removes from edges the opening edge
+    returns the switch index in the opening edge
     """
-    current_switch = 0
-    blacklist = []
-    next_edge = edges[0]
-    while next_edge:
-        blacklist.append(next_edge.switches[current_switch])
-        current_edge = next_edge
-        current_switch = 1 - current_switch
-        next_edge = get_white_neighbour(edges, current_edge.switches[current_switch], blacklist)
+    current_switch = (edges[0], 0)
+    old_switches = [current_switch]
+    next_switch = get_neighbor_edge(edges, current_switch, old_switches)
+    while next_switch:
+        current_switch = next_switch
+        old_switches.append(current_switch)
+        next_switch = get_neighbor_edge(edges, current_switch, old_switches)
 
-    queue.append(current_edge)
-    edges.remove(current_edge)
-    return current_switch
+    edges.remove(current_switch[0])
+    queue.append(current_switch[0])
+    return current_switch[1]
 
 
 def get_list_of_components(edges):

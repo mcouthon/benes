@@ -8,7 +8,7 @@ ALL_MATRICES_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.
 def get_matrix(*args):
     all_matrices = cPickle.load(open(ALL_MATRICES_PATH, 'rb'))
     if args not in all_matrices:
-        all_matrices[args] = matrix.matrix(*args)
+        all_matrices[args] = matrix.matrix_factory.get_probability_matrix(*args)
         cPickle.dump(all_matrices, open(ALL_MATRICES_PATH, 'wb'))
     return all_matrices[args]
 
