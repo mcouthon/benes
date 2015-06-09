@@ -7,16 +7,25 @@ import time
 Tests
 """
 def test_eigs(n,q,isSymbolic):
-    print "n: " + str(n) + "q: " + str(q) + "isSymbolic : " + str(isSymbolic)
+    print "n=: " + str(n) + "q: " + str(q) + "isSymbolic : " + str(isSymbolic)
     m = matrix_factory.get_probability_matrix(n,q,isSymbolic)
     print "Rounded eigs: " + str(m.get_round_eigevalue_set())
     print "All eigs: " + str(m.get_eigenvalue_set())
 
 def test_reduced(n,q,isSymbolic):
-    print "n: " + str(n) + "q: " + str(q) + "isSymbolic : " + str(isSymbolic)
+    print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    print "Testing Matrix"
+    print "Matrix Type = Reduced (only types)"
+    print "n = " + str(n)
+    print "q = " + str(q)
+    precision = "Float"
+    if isSymbolic:
+        precision = "Decimal"
+    print "precision = " + precision
     m = matrix_factory.get_reduced_matrix(n,q,isSymbolic)
-    print "Rounded eigs: " + str(m.get_round_eigevalue_set())
-    print "All eigs: " + str(m.get_eigenvalue_set())
+    print "All eigs: " + str(m.get_round_eigevalue_set())
+    #print "All eigs: " + str(m.get_eigenvalue_set())
+    print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 def runner_q2(n=8, repetitions=1):
     for i in range(repetitions):
@@ -60,9 +69,12 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
         ex_set[k] = v
 
 if __name__ == '__main__':
-    test_reduced(8,2,False)
+    for i in range(2,9):
+        test_reduced(8,i,True)
+    #test_reduced(8,2,True)
     #runner_q2(8, 1)
     #runner_q3(8, 3)
     #test_eigs(8,2,False)
     #test_eigs(8,2,True)
     #test_eigs(8,3,False)
+    #test_reduced(8,3,True)

@@ -21,6 +21,6 @@ if __name__ == '__main__':
     print 'calculating matrix..'
     # m = matrix.matrix(8,3,False)
     # matrix_cache.clear_cache()
-    m = matrix_cache.get_matrix(8, 4, False)
+    m = matrix_cache.get_matrix(8, 3, False)
     print 'getting prob differences..'
     print get_prob_differences_per_power(m, 9)

@@ -58,7 +58,13 @@ class matrix_factory(object):
         matrix_instance = matrix()
         matrix_instance.n = n
         matrix_instance.q = q
-        matrix_instance.m = numpy.matrix(columns)
+
+        if (isSymbolic == True):                                            # choose matrix type
+            matrix_instance.m=sympy.Matrix(numpy.matrix(columns))
+        else:
+            matrix_instance.m=numpy.matrix(columns)
+
+        #matrix_instance.m = numpy.matrix(columns)
 
         size = int(math.floor(math.factorial(n) / math.factorial(n-q)))     # (n)_q
         matrix_instance.r = len(columns)                                  # rows
@@ -156,8 +162,12 @@ class matrix(object):
         """
         returns a set of rounded (decimal precsion) eigenvalues
         :return:
+        :return:
         """
-        return set(numpy.round(self.get_eigenvalues(), 4))
+        if (self.isSymbolic == True):
+            return self.get_eigenvalues()
+        else:
+            return set(numpy.round(self.get_eigenvalues(), 4))
 
     """
     Benesh probabilities utils
