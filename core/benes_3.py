@@ -35,6 +35,28 @@ def get_triplet_numbers(triplet_type):
     else:
         return c, a
 
+def is_same_pattern(alpha_type, beta_type):
+    if alpha_type[0] < alpha_type[1] and alpha_type[2] < alpha_type[1]:
+        if beta_type[0] < beta_type[1] and beta_type[2] < beta_type[1]:
+            return True
+        else:
+            return False
+
+    elif alpha_type[0] < alpha_type[2] and alpha_type[1] < alpha_type[2]:
+        if beta_type[0] < beta_type[2] and beta_type[1] < beta_type[2]:
+            return True
+        else:
+            return False
+
+    elif alpha_type[1] < alpha_type[0] and alpha_type[2] < alpha_type[0]:
+        if beta_type[1] < beta_type[0] and beta_type[2] < beta_type[0]:
+            return True
+        else:
+            return False
+
+    else:
+        print 'AHHHH!!!!'
+
 def calculate_benes_3(alpha, beta, n):
     alpha_type = get_triplet_type(alpha)
     beta_type = get_triplet_type(beta)
@@ -42,7 +64,7 @@ def calculate_benes_3(alpha, beta, n):
     r, d = get_triplet_numbers(alpha_type)
     l, k = get_triplet_numbers(beta_type)
 
-    if alpha_type == beta_type:
+    if is_same_pattern(alpha_type, beta_type):
         if k == d and l == r:
             return 1.0 / (n ** 3) + (2.0 ** d) / (n ** 4) + 2 * (2.0 ** r) / (n ** 4) + 2 * (2.0 ** (d + r)) / (n ** 5)
         elif k == d and l != r:

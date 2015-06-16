@@ -182,4 +182,9 @@ def runner_3(n=8, repetitions=1):
 
 
 if __name__ == '__main__':
-    runner_3()
+    c1 = calculate_benes((0, 1, 2), (0, 2, 4), 8)
+    c2 = calculate_benes_3((0, 1, 2), (0, 2, 4), 8)
+
+    print c1
+    print c2
+    print 1.0 / (8 ** 3)
