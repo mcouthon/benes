@@ -9,7 +9,8 @@ def calc_probability_difference(mat, power=1):
     size = mat.r
     mat = mat.getMatrixPower(power)
     # math.r is the actual size
-    return 0.5 * max(sum(abs(mat[i,j] - (1. / size)) for j in range(size)) for i in range(size))
+    sequence = [sum(abs(mat[i, j] - (1. / size)) for j in range(size)) for i in range(size)]
+    return 0.5 * (max(sequence) - min(sequence))
 
 
 
@@ -21,6 +22,6 @@ if __name__ == '__main__':
     print 'calculating matrix..'
     # m = matrix.matrix(8,3,False)
     # matrix_cache.clear_cache()
-    m = matrix_cache.get_matrix(8, 3, False)
+    m = matrix_cache.get_matrix(8, 2, False)
     print 'getting prob differences..'
     print get_prob_differences_per_power(m, 9)
