@@ -70,12 +70,10 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
 
 if __name__ == '__main__':
 
-    #for i in range(2,9):
-    #    test_reduced(8,i,True)
-    #test_reduced(8,2,True)
-    #runner_q2(8, 1)
-    runner_q3(8, 3)
-    #test_eigs(8,2,False)
-    #test_eigs(8,2,True)
-    #test_eigs(8,3,False)
-    #test_reduced(8,3,True)
+    # not symbolic
+    for i in (16,32,64):
+        test_reduced(i,4,False)
+
+    #symbolic
+    for i in (16,32,64):
+        test_reduced(i,4,True)
