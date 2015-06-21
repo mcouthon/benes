@@ -26,6 +26,7 @@ def test_reduced(n,q,isSymbolic):
     print "precision = " + precision
     m = matrix_factory.get_reduced_matrix(n,q,isSymbolic)
     print "All eigs: " + str(m.get_round_eigevalue_set())
+
     #print "All eigs: " + str(m.get_eigenvalue_set())
     print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
@@ -72,20 +73,25 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
 
 if __name__ == '__main__':
     powers = 4
-    n = 8
-    for i in range(2,9):
-        test_reduced(n,i,True)
-        m = matrix_cache.get_matrix(n, i, False)
-        diffs = differences.get_prob_differences_per_power(m, powers)
-        for j in range(powers):
-            power = j+1
-            B = "(B^%d)" % power if power > 1 else "B"
-            print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                    % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
-    #test_reduced(8,2,True)
-    #runner_q2(8, 1)
-    #runner_q3(8, 3)
-    #test_eigs(8,2,False)
-    #test_eigs(8,2,True)
-    #test_eigs(8,3,False)
-    #test_reduced(8,3,True)
+    for n in (4,8,16):
+        for q in range(2,6):
+            if n > q :
+                test_reduced(n,q,True)
+                m = matrix_cache.get_matrix(n, i, False)
+                diffs = differences.get_prob_differences_per_power(m, powers)
+                for j in range(powers):
+                    power = j+1
+                    B = "(B^%d)" % power if power > 1 else "B"
+                    print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
+                            % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+
+    for n in (32,64):
+        for q in range(2,3):
+            test_reduced(n,q,True)
+            m = matrix_cache.get_matrix(n, i, False)
+            diffs = differences.get_prob_differences_per_power(m, powers)
+            for j in range(powers):
+                power = j+1
+                B = "(B^%d)" % power if power > 1 else "B"
+                print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
+                        % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
