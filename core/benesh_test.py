@@ -1,7 +1,9 @@
 from matrix import matrix_factory
+import matrix_cache
 import calculations
 import benes_3
 import time
+import differences
 
 """
 Tests
@@ -69,8 +71,17 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
         ex_set[k] = v
 
 if __name__ == '__main__':
+    powers = 4
+    n = 8
     for i in range(2,9):
-        test_reduced(8,i,True)
+        test_reduced(n,i,True)
+        m = matrix_cache.get_matrix(n, i, False)
+        diffs = differences.get_prob_differences_per_power(m, powers)
+        for j in range(powers):
+            power = j+1
+            B = "(B^%d)" % power if power > 1 else "B"
+            print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
+                    % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
     #test_reduced(8,2,True)
     #runner_q2(8, 1)
     #runner_q3(8, 3)

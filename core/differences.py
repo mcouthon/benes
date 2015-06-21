@@ -9,7 +9,8 @@ def calc_probability_difference(mat, power=1):
     size = mat.r
     mat = mat.getMatrixPower(power)
     # math.r is the actual size
-    return 0.5 * max(sum(abs(mat[i,j] - (1. / size)) for j in range(size)) for i in range(size))
+    diffs = [0.5 * sum(abs(mat[i,j] - (1. / size)) for j in range(size)) for i in range(size)]
+    return {'max': max(diffs), 'min': min(diffs)}
 
 
 
