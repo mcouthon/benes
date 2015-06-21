@@ -24,6 +24,7 @@ def test_reduced(n,q,isSymbolic):
     print "precision = " + precision
     m = matrix_factory.get_reduced_matrix(n,q,isSymbolic)
     print "All eigs: " + str(m.get_round_eigevalue_set())
+
     #print "All eigs: " + str(m.get_eigenvalue_set())
     print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
@@ -70,10 +71,11 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
 
 if __name__ == '__main__':
 
-    # not symbolic
-    for i in (16,32,64):
-        test_reduced(i,4,False)
+    for n in (4,8,16):
+        for q in range(2,6):
+            if n > q :
+                test_reduced(n,q,True)
 
-    #symbolic
-    for i in (16,32,64):
-        test_reduced(i,4,True)
+    for n in (32,64):
+        for q in range(2,3):
+            test_reduced(n,q,True)
