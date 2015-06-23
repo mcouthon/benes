@@ -77,21 +77,21 @@ if __name__ == '__main__':
         for q in range(2,6):
             if n > q :
                 test_reduced(n,q,True)
-                m = matrix_cache.get_matrix(n, i, False)
+                m = matrix_cache.get_matrix(n, q, False)
                 diffs = differences.get_prob_differences_per_power(m, powers)
                 for j in range(powers):
                     power = j+1
                     B = "(B^%d)" % power if power > 1 else "B"
                     print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                            % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+                            % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
 
     for n in (32,64):
         for q in range(2,3):
             test_reduced(n,q,True)
-            m = matrix_cache.get_matrix(n, i, False)
+            m = matrix_cache.get_matrix(n, q, False)
             diffs = differences.get_prob_differences_per_power(m, powers)
             for j in range(powers):
                 power = j+1
                 B = "(B^%d)" % power if power > 1 else "B"
                 print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                        % dict(B=B, n=n, q=i, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+                        % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
