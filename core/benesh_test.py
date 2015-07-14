@@ -71,7 +71,20 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
     if k not in ex_set:
         ex_set[k] = v
 
+def probabilities_test():
+    powers = 4
+    for n, q in ((16, 8), (32, 16)):
+        m = matrix_cache.get_matrix(n, q, False)
+        print 'got matrix'
+        diffs = differences.get_prob_differences_per_power(m, powers)
+        for j in range(powers):
+            power = j+1
+            B = "(B^%d)" % power if power > 1 else "B"
+            print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
+                    % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+
 if __name__ == '__main__':
+    # probabilities_test()
     powers = 4
     for n in (4,8,16):
         for q in range(2,6):
