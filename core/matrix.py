@@ -25,7 +25,6 @@ class matrix_factory(object):
         matrix_instance.c = size                                                       # cols
         matrix_instance.isSymbolic = isSymbolic
         matrix_instance.matrix_type = 'BENESH'
-
         if (isSymbolic == True):                                            # choose matrix type
             matrix_instance.m=sympy.Matrix(numpy.zeros([matrix_instance.r,matrix_instance.c]))
         else:
@@ -129,27 +128,30 @@ class matrix(object):
             D = numpy.transpose(P) * self.m * P
             return D
 
-    def getMatrixPower(self, p):
+    def getMatrixPower(self, p, compute_diagonal=True):
         """
         Diagonlizes the matrix, and exponentiates it efficiently.
         returns the matrix p-th power.
         :param p:
         :return:
         """
-        if (self.isSymbolic == False):
-            w, v = LA.eigh(self.m)
-            P = numpy.matrix(v)
-            D = numpy.transpose(P) * self.m * P
-            for i in range (0,self.r):
-                D[i,i]=pow(D[i,i],p)
-            D = P * D * numpy.transpose(P)
-            return D
+        if compute_diagonal:
+            if (self.isSymbolic == False):
+                w, v = LA.eigh(self.m)
+                P = numpy.matrix(v)
+                D = numpy.transpose(P) * self.m * P
+                for i in range (0,self.r):
+                    D[i,i]=pow(D[i,i],p)
+                D = P * D * numpy.transpose(P)
+                return D
+            else:
+                P, D = self.m.diagonalize();
+                for i in range (0,self.r):
+                    D[i,i]=pow(D[i,i],p)
+                D = P * D * P^(-1)
+                return D
         else:
-            P, D = self.m.diagonalize();
-            for i in range (0,self.r):
-                D[i,i]=pow(D[i,i],p)
-            D = P * D * P^(-1)
-            return D
+            return self.m^p
 
     def get_eigenvalue_set(self):
         """
