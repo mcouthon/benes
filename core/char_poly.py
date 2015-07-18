@@ -1,10 +1,6 @@
 from math import sqrt
-import cPickle
-import os
 from sympy.polys.polytools import Poly, Symbol, div
 from core import matrix_cache
-
-POLYS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'all_polys.pkl'))
 
 
 class CharPoly(object):
@@ -14,8 +10,7 @@ class CharPoly(object):
 		self.poly = self.create_char_poly(n, q)
 
 	def create_char_poly(self, n, q):
-		m = matrix_cache.get_reduced_matrix(n, q, True)
-		p = m.m.eigenvals()
+		p = matrix_cache.get_char_poly(n, q, True)
 		p = p.as_expr(self.x)
 		return p.nsimplify()
 
@@ -38,10 +33,10 @@ class CharPoly(object):
 		return 1.0 / (2 ** k)
 
 	def sub_root_linear(self, root):
-		return self.poly.subs(self.x, root)
+		return self.poly.subs2(self.x, root)
 
 	def sub_root_sqr(self, root):
-		return self.poly.subs(self.x, sqrt(root))
+		return self.poly.subs2(self.x, sqrt(root))
 
 	def get_root_mult(self, root, is_linear):
 		mult_count = 0
@@ -81,17 +76,9 @@ class CharPoly(object):
 		return [x[2] for x in cp_elements.values()]
 
 if __name__ == "__main__":
-	# polys = dict()
-	# polys[8] = dict()
-	# cPickle.dump({}, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
-	# for q in (2, 3, 4):
-	# 	cp = CharPoly(8, q)
-	# 	polys[8][q] = cp.poly
-	#
-	# cPickle.dump(polys, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
-
 	n = 8
 	q = 4
 	cp = CharPoly(n, q)
+	p = cp.poly
 	print cp.get_roots()
 	print cp.poly
