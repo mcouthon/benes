@@ -3,6 +3,9 @@ import matrix_cache
 import calculations
 import benes_3
 import time
+from sympy import Symbol
+from sympy import Poly
+from sympy import pdiv
 import differences
 
 """
@@ -71,40 +74,30 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
     if k not in ex_set:
         ex_set[k] = v
 
-def probabilities_test():
-    powers = 4
-    for n, q in ((16, 8), (32, 16)):
-        m = matrix_cache.get_matrix(n, q, False)
-        print 'got matrix'
-        diffs = differences.get_prob_differences_per_power(m, powers)
-        for j in range(powers):
-            power = j+1
-            B = "(B^%d)" % power if power > 1 else "B"
-            print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                    % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+def get_char_poly(n ,q):
+    m = matrix_factory.get_reduced_matrix(n,q,True)
+    #p = m.m.berkowitz_charpoly()
+    p = m.m.charpoly()
+    return p
+
+def test_char_poly(n ,q):
+    m = matrix_factory.get_reduced_matrix(n,q,True)
+    p = m.m.berkowitz_charpoly()
+    x = Symbol('x')
+    p = p.as_expr(x)
+    for root in (Symbol('1'), Symbol('1/8')):
+        assert p.subs(x,root) == Symbol('0')
+        p = pdiv(p,Poly(x-1,x))
+        p = p.as_expr(x)
+        p = pdiv(p,Poly(x-1/8,x))
+        p = p.as_expr(x)
+        p = pdiv(p,Poly(x-1/8,x))
+        p = p.as_expr(x)
+    print p
+
+
 
 if __name__ == '__main__':
-    # probabilities_test()
-    powers = 4
-    for n in (4,8,16):
-        for q in range(2,6):
-            if n > q :
-                test_reduced(n,q,True)
-                m = matrix_cache.get_matrix(n, q, False)
-                diffs = differences.get_prob_differences_per_power(m, powers)
-                for j in range(powers):
-                    power = j+1
-                    B = "(B^%d)" % power if power > 1 else "B"
-                    print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                            % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
-
-    for n in (32,64):
-        for q in range(2,3):
-            test_reduced(n,q,True)
-            m = matrix_cache.get_matrix(n, q, False)
-            diffs = differences.get_prob_differences_per_power(m, powers)
-            for j in range(powers):
-                power = j+1
-                B = "(B^%d)" % power if power > 1 else "B"
-                print ("Distance from Uniformic probability for %(B)s, n = %(n)d, q = %(q)d: {Minimum = %(diff_min)lf}, {Maximum = %(diff_max)lf}"
-                        % dict(B=B, n=n, q=q, diff_min=diffs[j]['min'], diff_max=diffs[j]['max']))
+    #p = get_char_poly(8, 2)
+    test_char_poly(8,2)
+    #print p
