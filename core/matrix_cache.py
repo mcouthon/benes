@@ -9,7 +9,7 @@ def get_matrix(*args):
     all_matrices = cPickle.load(open(ALL_MATRICES_PATH, 'rb'))
     if args not in all_matrices:
         all_matrices[args] = matrix.matrix_factory.get_probability_matrix(*args)
-        cPickle.dump(all_matrices, open(ALL_MATRICES_PATH, 'wb'))
+        cPickle.dump(all_matrices, open(ALL_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
     return all_matrices[args]
 
 def clear_cache():
