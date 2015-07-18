@@ -1,3 +1,4 @@
+from sympy.polys.polytools import div
 from matrix import matrix_factory
 import matrix_cache
 import calculations
@@ -12,8 +13,8 @@ import differences
 Tests
 """
 def test_eigs(n,q,isSymbolic):
-    print "n=: " + str(n) + "q: " + str(q) + "isSymbolic : " + str(isSymbolic)
-    m = matrix_factory.get_probability_matrix(n,q,isSymbolic)
+    print "n=: " + str(n) + ", q: " + str(q) + ", isSymbolic : " + str(isSymbolic)
+    m = matrix_factory.get_reduced_matrix(n, q, isSymbolic)
     print "Rounded eigs: " + str(m.get_round_eigevalue_set())
     print "All eigs: " + str(m.get_eigenvalue_set())
 
@@ -85,19 +86,14 @@ def test_char_poly(n ,q):
     p = m.m.berkowitz_charpoly()
     x = Symbol('x')
     p = p.as_expr(x)
-    for root in (Symbol('1'), Symbol('1/8')):
-        assert p.subs(x,root) == Symbol('0')
-        p = pdiv(p,Poly(x-1,x))
-        p = p.as_expr(x)
-        p = pdiv(p,Poly(x-1/8,x))
-        p = p.as_expr(x)
-        p = pdiv(p,Poly(x-1/8,x))
+    for root in (1, 1.0 / 8, 1.0 / 8):
+        print p
+        assert p.subs(x,root) == 0
+        p = div(p,Poly(x-root,x))[0]
         p = p.as_expr(x)
     print p
 
 
 
 if __name__ == '__main__':
-    #p = get_char_poly(8, 2)
-    test_char_poly(8,2)
-    #print p
+    test_eigs(8, 2, True)
