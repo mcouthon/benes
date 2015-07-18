@@ -1,6 +1,10 @@
 from math import sqrt
+import cPickle
+import os
 from sympy.polys.polytools import Poly, Symbol, div
-from matrix import matrix_factory
+from core import matrix_cache
+
+POLYS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'all_polys.pkl'))
 
 
 class CharPoly(object):
@@ -10,7 +14,7 @@ class CharPoly(object):
 		self.poly = self.create_char_poly(n, q)
 
 	def create_char_poly(self, n, q):
-		m = matrix_factory.get_reduced_matrix(n, q, True)
+		m = matrix_cache.get_reduced_matrix(n, q, True)
 		p = m.m.eigenvals()
 		p = p.as_expr(self.x)
 		return p.nsimplify()
@@ -77,6 +81,15 @@ class CharPoly(object):
 		return [x[2] for x in cp_elements.values()]
 
 if __name__ == "__main__":
+	# polys = dict()
+	# polys[8] = dict()
+	# cPickle.dump({}, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+	# for q in (2, 3, 4):
+	# 	cp = CharPoly(8, q)
+	# 	polys[8][q] = cp.poly
+	#
+	# cPickle.dump(polys, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+
 	n = 8
 	q = 4
 	cp = CharPoly(n, q)

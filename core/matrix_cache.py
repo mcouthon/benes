@@ -4,6 +4,8 @@ import cPickle
 from core import matrix
 
 ALL_MATRICES_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'all_matrices.pkl'))
+ALL_RED_MATRICES_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'all_red_matrices.pkl'))
+
 
 def get_matrix(*args):
     all_matrices = cPickle.load(open(ALL_MATRICES_PATH, 'rb'))
@@ -12,5 +14,23 @@ def get_matrix(*args):
         cPickle.dump(all_matrices, open(ALL_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
     return all_matrices[args]
 
+
+def get_reduced_matrix(*args):
+    all_red_matrices = cPickle.load(open(ALL_RED_MATRICES_PATH, 'rb'))
+    if args not in all_red_matrices:
+        all_red_matrices[args] = matrix.matrix_factory.get_reduced_matrix(*args)
+        cPickle.dump(all_red_matrices, open(ALL_RED_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+    return all_red_matrices[args]
+
+
+def get_char_poly(*args):
+    all_red_matrices = cPickle.load(open(ALL_RED_MATRICES_PATH, 'rb'))
+    if args not in all_red_matrices:
+        all_red_matrices[args] = matrix.matrix_factory.get_reduced_matrix(*args)
+        cPickle.dump(all_red_matrices, open(ALL_RED_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+    return all_red_matrices[args]
+
+
 def clear_cache():
-    cPickle.dump({}, open(ALL_MATRICES_PATH,'wb'), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump({}, open(ALL_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump({}, open(ALL_RED_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
