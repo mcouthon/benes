@@ -2,6 +2,8 @@ import math
 import numpy
 from numpy import linalg as LA
 import sympy
+from sympy.core.symbol import Dummy
+from sympy.simplify.simplify import nsimplify
 import calculations
 import itertools
 import q_vec
@@ -250,3 +252,13 @@ class matrix(object):
             d=math.floor(d/n)
         l.reverse()
         return tuple(l)
+
+    def custom_charpoly(self, **flags):
+        """
+        custom charpoly
+        """
+        self.m = self.m._new(self.m.rows, self.m.cols,
+                             [nsimplify(v, rational=True) for v in self.m])
+
+        flags.pop('simplify', None)  # pop unsupported flag
+        return self.m.berkowitz_charpoly(Dummy('x'))
