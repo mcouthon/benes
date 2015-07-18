@@ -48,6 +48,53 @@ class matrix_factory(object):
         return matrix_instance
 
     @staticmethod
+    def get_probability_disk_matrix(n, q, isSymbolic):
+        """
+        using disk memory and not RAM memory.
+
+        :param n: vector size
+        :param q: tuple size
+        :param isSymbolic: determines wether caclulcation will be Symbolic or float128 precision
+        :return: returns a matrix instace of size (n)_q with benesh probabilities
+        """
+        import h5py
+
+        matrix_instance = matrix()
+        matrix_instance.n = n
+        matrix_instance.q = q
+        size = int(math.floor(math.factorial(n) / math.factorial(n-q)))     # (n)_q
+        matrix_instance.r = size                                                       # rows
+        matrix_instance.c = size                                                       # cols
+        matrix_instance.isSymbolic = isSymbolic
+        matrix_instance.matrix_type = 'BENESH'
+        if (isSymbolic == True):                                            # choose matrix type
+            matrix_instance.m=sympy.Matrix(numpy.zeros([matrix_instance.r,matrix_instance.c]))
+        else:
+            f = h5py.File("/tmp/mytestfile.hdf5", "w")
+            matrix_instance.f = f
+            matrix_instance.m = f.create_dataset("mydataset", 
+                                                 (matrix_instance.r,matrix_instance.c),
+                                                 dtype=numpy.float64)
+            # numpy.zeros([matrix_instance.r,matrix_instance.c],dtype=numpy.float64)
+
+        matrix_instance.indicesToVectors = []
+        matrix_instance.vectorsToIndices = {}
+
+        i = 0                                                              # build map vector <-> matrix index
+        for v in itertools.permutations(range(n), q):
+            matrix_instance.indicesToVectors.append(v)
+            matrix_instance.vectorsToIndices[v] = i
+            i = i + 1
+
+        for i in range(0, matrix_instance.r):                               # init matrix with base values
+            alpha = matrix_instance.indicesToVectors[i]
+            for j in range(0, matrix_instance.c):
+                beta = matrix_instance.indicesToVectors[j]
+                matrix_instance.m[i, j] = calculations.calculate_benes(alpha, beta, n)
+
+        return matrix_instance
+
+    @staticmethod
     def get_reduced_matrix(n, q, isSymbolic):
 
 
