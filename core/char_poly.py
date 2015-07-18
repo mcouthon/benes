@@ -81,17 +81,10 @@ class CharPoly(object):
 		return [x[2] for x in cp_elements.values()]
 
 if __name__ == "__main__":
-	# polys = dict()
-	# polys[8] = dict()
-	# cPickle.dump({}, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
-	# for q in (2, 3, 4):
-	# 	cp = CharPoly(8, q)
-	# 	polys[8][q] = cp.poly
-	#
-	# cPickle.dump(polys, open(POLYS_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+    n = 16
+    q = 3
+    # cp = CharPoly(n, q)
+    # p = cp.poly
+    cp = matrix_cache.get_char_poly(n, q, True)
+    print cp
 
-	n = 8
-	q = 4
-	cp = CharPoly(n, q)
-	print cp.get_roots()
-	print cp.poly
