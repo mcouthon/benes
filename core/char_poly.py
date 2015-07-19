@@ -76,9 +76,9 @@ class CharPoly(object):
 		return [x[2] for x in cp_elements.values()]
 
 if __name__ == "__main__":
-	n = 8
+	n = 16
 	q = 4
-	cp = CharPoly(n, q)
-	p = cp.poly
-	print cp.get_roots()
-	print cp.poly
+	# cp = CharPoly(n, q)
+	# p = cp.poly
+	# print cp.get_roots()
+	print matrix_cache.get_char_poly(n, q, True)
