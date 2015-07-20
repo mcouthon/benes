@@ -29,6 +29,8 @@ def get_char_poly(*args):
     if args not in all_charpoly:
         print 'getting reduced matrix'
         m = get_reduced_matrix(*args)
+        # load it again so we won't override the recued matrix
+        all_charpoly = cPickle.load(open(ALL_CHARPOLY_PATH, 'rb'))
         print 'getting charpoly'
         all_charpoly[args] = m.custom_charpoly()
         cPickle.dump(all_charpoly, open(ALL_CHARPOLY_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
