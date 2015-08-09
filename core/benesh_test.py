@@ -8,6 +8,9 @@ from sympy import Symbol
 from sympy import Poly
 from sympy import pdiv
 import differences
+import sympy
+import numpy
+from sympy.simplify.simplify import nsimplify
 
 """
 Tests
@@ -77,13 +80,15 @@ def add_to_unexpected(alpha, beta, ex_set, ex, actual):
 
 def get_char_poly(n ,q):
     m = matrix_factory.get_reduced_matrix(n,q,True)
-    #p = m.m.berkowitz_charpoly()
-    p = m.m.charpoly()
-    return p
+    print "got matrix"
+    p = m.custom_charpoly()
+    print p
 
-def test_char_poly(n ,q):
+
+def test_char_poly(n, q):
     m = matrix_factory.get_reduced_matrix(n,q,True)
-    p = m.m.berkowitz_charpoly()
+    print "got matrix"
+    p = m.custom_charpoly()
     x = Symbol('x')
     p = p.as_expr(x)
     for root in (1, 1.0 / 8, 1.0 / 8):
@@ -93,7 +98,45 @@ def test_char_poly(n ,q):
         p = p.as_expr(x)
     print p
 
+def get_float_poly(n,q):
+
+    m = matrix_factory.get_reduced_matrix(n,q,False)
+    m.m *= 8
+    print "got matrix"
+    print m.get_size()
+    p = m.custom_charpoly()
+    print p
+
+def get_nullspace(n,q,eigv):
+    M = matrix_cache.get_reduced_matrix(n,q, True)
+    M.m = M.m._new(M.m.rows, M.m.cols,[nsimplify(v, rational=True) for v in M.m])
+
+    # N = M - lambdaI
+    N = M.m - sympy.Matrix.eye(M.get_size())* eigv
+
+    # rationalize entries
+    N = N._new(N.rows, N.cols,[nsimplify(v, rational=True) for v in N])
+
+    # find eigenspace - Kernel(M-lambdaI) = Kernel(N)
+    EigenSpaceBase = N.nullspace()
+
+    # orthogonal space = Kernel(TransposedEigenVectors)
+    TransposedEigenSpaceBase = [list(v) for v in EigenSpaceBase]
+    EigenSpaceTransposeMatrix = (sympy.Matrix(numpy.matrix(TransposedEigenSpaceBase)))
+    OrthogonalSubspaceBase = EigenSpaceTransposeMatrix.nullspace()
+
+    # need to transpose to put the vectors in columns, and get a matrix for the orthogonal operator
+    OrthogonalSubspaceMatrix = (sympy.Matrix(numpy.matrix(OrthogonalSubspaceBase))).transpose()
+
+    # multiply M * Ortohogonal, to get the reduction of M on the orthogonal subspace
+    OrthogonalSubspaceMatrix =  OrthogonalSubspaceMatrix._new(OrthogonalSubspaceMatrix.rows, OrthogonalSubspaceMatrix.cols,
+                                                              [nsimplify(v, rational=True) for v in OrthogonalSubspaceMatrix])
+    EigenValueReducedMatrix = M.m * OrthogonalSubspaceMatrix
+    EigenValueReducedMatrix = EigenValueReducedMatrix.rref()
+
+
 
 
 if __name__ == '__main__':
-    test_eigs(8, 2, True)
+    get_nullspace(8, 2, (1/8.0))
+

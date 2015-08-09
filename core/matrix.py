@@ -257,8 +257,22 @@ class matrix(object):
         """
         custom charpoly
         """
-        self.m = self.m._new(self.m.rows, self.m.cols,
-                             [nsimplify(v, rational=True) for v in self.m])
 
-        flags.pop('simplify', None)  # pop unsupported flag
-        return self.m.berkowitz_charpoly(Dummy('x'))
+        if (self.isSymbolic == True):
+            self.m = self.m._new(self.m.rows, self.m.cols,[nsimplify(v, rational=True) for v in self.m])
+            max_denom = 0;
+            for i in range (0,self.m.rows):
+                for j in range (0,self.m.cols):
+                    if self.m[i,j] > max_denom:
+                        max_denom = self.m[i,j].q
+            print max_denom
+            self.m *= max_denom
+            flags.pop('simplify', None)  # pop unsupported flag
+            return self.m.berkowitz_charpoly(Dummy('x'))
+        else:
+            numpy.rint(self.m)
+            return numpy.rint(numpy.poly(self.m))
+
+
+
+
