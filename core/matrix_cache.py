@@ -1,3 +1,7 @@
+"""
+caching matrices in files, so you won't have to run the whole calculation of the benesh-matrix from scratch every time.
+"""
+
 import os
 import cPickle
 
@@ -38,3 +42,4 @@ def get_char_poly(*args):
 def clear_cache():
     cPickle.dump({}, open(ALL_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
     cPickle.dump({}, open(ALL_RED_MATRICES_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump({}, open(ALL_CHARPOLY_PATH, 'wb'), cPickle.HIGHEST_PROTOCOL)
